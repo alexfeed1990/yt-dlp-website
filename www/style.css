@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+:root {
+    --sl-color-primary-50: var(--sl-color-red-50);
+    --sl-color-primary-100: var(--sl-color-red-100);
+    --sl-color-primary-200: var(--sl-color-red-200);
+    --sl-color-primary-300: var(--sl-color-red-300);
+    --sl-color-primary-400: var(--sl-color-red-400);
+    --sl-color-primary-500: var(--sl-color-red-500);
+    --sl-color-primary-600: var(--sl-color-red-600);
+    --sl-color-primary-700: var(--sl-color-red-700);
+    --sl-color-primary-800: var(--sl-color-red-800);
+    --sl-color-primary-900: var(--sl-color-red-900);
+    --sl-color-primary-950: var(--sl-color-red-950);
+}
+
+html, body {
+    font-family: 'Roboto', sans-serif;
+
+    background-image: linear-gradient(to top right, rgb(0, 0, 0), rgb(186, 0, 0));
+    background-repeat: no-repeat;
+    overflow: hidden;
+
+    width: 100vw;
+    height: 100vh;
+}
+
+.center-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    width: 100vw;
+    height: 100vh;
+}
+
+.center-div sl-button {
+    text-align: center;
+}

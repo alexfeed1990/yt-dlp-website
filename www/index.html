@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html class="sl-theme-dark" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Libraries -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.5.1/cdn/themes/dark.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.5.1/cdn/shoelace-autoloader.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- Scripts & CSS -->
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <title>YT-DLP - Home</title>
+</head>
+
+<body>
+    <div class="center-div">
+        <div>
+            <form id="download-form">
+                <sl-input type="url" label="URL" name="url" placeholder="https://youtube.com/..." required></sl-input>
+                <br />
+                <sl-select label="File Format" name="format" required>
+                    <sl-option value="mp4">MP4</sl-option>
+                    <sl-option value="mp3">MP3</sl-option>
+                    <sl-option value="m4a">M4A (Audio)</sl-option>
+                    <sl-option value="wav">WAV (Audio)</sl-option>
+                    <sl-option value="ogg">OGG (Audio)</sl-option>
+                    <sl-option value="mkv">MKV (Video)</sl-option>
+                    <sl-option value="webm">WEBM (Video)</sl-option>
+                </sl-select>
+                <br />
+                <sl-button type="submit" variant="primary">Download</sl-button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
