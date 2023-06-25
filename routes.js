@@ -70,7 +70,6 @@ module.exports.main = function main() {
     app.use(bodyParser.urlencoded({ extended: false }))
 
     const oneDay = 1000 * 60 * 60 * 24; // 24 hours
-    const downloadDeleteDelay = 1000 * 60 // 20 minutes
 
     customAlphabet("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
     app.use(session({
