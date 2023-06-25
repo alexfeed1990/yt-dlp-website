@@ -7,9 +7,7 @@ const bodyParser = require('body-parser');
 const JSZip = require('jszip');
 const path = require("path");
 const ffmpeg = require("fluent-ffmpeg");
-const setTimeoutAsync = require('timers/promises').setTimeout;
-
-const port = 3000;
+const { jobidLength, secretLength, port } = require("./config.json");
 let execPath = "";
 
 function getYTDLPLocation() {
@@ -73,7 +71,7 @@ module.exports.main = function main() {
 
     customAlphabet("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
     app.use(session({
-        secret: nanoid(25),
+        secret: nanoid(secretLength),
         saveUninitialized: true,
         cookie: { maxAge: oneDay },
         resave: false
@@ -127,7 +125,7 @@ module.exports.main = function main() {
         const data = req.body;
         let arguments = [];
         let url = data.url;
-        const jobid = nanoid(9);
+        const jobid = nanoid(jobidLength);
         const ytdlpExec = getYTDLPLocation();
 
         const audioArgs = ["-f", "ba", "-o", path.join("ytdlp", "downloads", req.sessionID, jobid, "%(title)s.%(ext)s"), "-U", url];

@@ -44,13 +44,14 @@ switch(hostOS) {
         break;
     case "darwin":
         if(hostArchitecture != "x64") {
-            console.error("The CPU Architecture you're running this app on is not supported officially by YT-DLP. (M1/M2 Macintosh)")
+            console.error("The CPU Architecture you're running this app on is not supported officially by YT-DLP. (M1/M2 Macintosh)");
+            process.exit();
         }
         execPath = "yt-dlp_macos";
         break;
     default:
         console.error("The OS you're running this app on is not supported officially by YT-DLP. (" + process.hostOS + ")");
-        break;
+        process.exit();
 }
 
 if(!commandExists.sync('ffmpeg')) {
@@ -65,24 +66,14 @@ if(!commandExists.sync('ffmpeg')) {
     process.exit();
 }
 
-
-
 const kilobyte = 1024;
 const megabyte = 1024 * kilobyte;
 const gigabyte = 1024 * megabyte;
 const limit = gigabyte * 2;
 
-if(!fs.existsSync("ytdlp")) {
-    fs.mkdirSync("ytdlp");
-}
-
-if (!fs.existsSync(path.join("ytdlp", "downloads"))) { 
-    fs.mkdirSync(path.join("ytdlp", "downloads")); 
-}
-
-if(fastFolderSizeSync(path.join("ytdlp", "downloads")) >= limit) {
-    console.warn("Your downloads folder is above 2GB in size. It would be the best to delete it.");
-}
+if(!fs.existsSync("ytdlp")) fs.mkdirSync("ytdlp");
+if (!fs.existsSync(path.join("ytdlp", "downloads"))) fs.mkdirSync(path.join("ytdlp", "downloads"));
+if(fastFolderSizeSync(path.join("ytdlp", "downloads")) >= limit) console.warn("Your downloads folder is above 2GB in size. It would be the best to delete it.");
 
 if(!fs.existsSync(path.join("ytdlp", execPath))) {
     console.log("YT-DLP does not exist.");
@@ -92,10 +83,8 @@ if(!fs.existsSync(path.join("ytdlp", execPath))) {
     dl.on('start', () => console.log("Downloading YT-DLP."));
     dl.on('end', () => {
         console.log('Download Finished.');
-        // Look below.
-
         fs.chmodSync(path.join(__dirname, "ytdlp", execPath), 755, (err) => {
-            if(err) console.error("chmod ytdlp error: " + err);
+            if(err) console.error("Chmod YT-DLP Error: " + err);
         });
 
         setExecPath(execPath);
