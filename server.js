@@ -17,20 +17,18 @@ const { setExecPath, main } = require("./routes.js");
 
 // Variables //
 
-const hostOS = process.platform;
-const hostArchitecture = process.arch;
 let execPath = "";
 
 // Init stuff //
 
 // This is for knowing what version of yt-dlp to download and which one to run
-switch(hostOS) {
+switch(process.platform) {
     case "win32":
         execPath = "yt-dlp.exe";
         break;
     case "linux":
         // fuck you nested switch
-        switch(hostArchitecture) {
+        switch(process.arch) {
             case "arm":
                 execPath = "yt-dlp_linux_armv7l";
                 break;
@@ -43,14 +41,14 @@ switch(hostOS) {
         }
         break;
     case "darwin":
-        if(hostArchitecture != "x64") {
+        if(process.arch != "x64") {
             console.error("The CPU Architecture you're running this app on is not supported officially by YT-DLP. (M1/M2 Macintosh)");
             process.exit();
         }
         execPath = "yt-dlp_macos";
         break;
     default:
-        console.error("The OS you're running this app on is not supported officially by YT-DLP. (" + process.hostOS + ")");
+        console.error("The OS you're running this app on is not supported officially by YT-DLP. (" + process.process.platform + ")");
         process.exit();
 }
 
