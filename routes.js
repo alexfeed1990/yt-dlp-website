@@ -128,8 +128,8 @@ module.exports.main = function main() {
         const jobid = nanoid(jobidLength);
         const ytdlpExec = getYTDLPLocation();
 
-        const audioArgs = ["-f", "ba", "-o", path.join("ytdlp", "downloads", req.sessionID, jobid, "%(title)s.%(ext)s"), "-U", url];
-        const videoArgs = ["-f", "bv*+ba/b", "-o", path.join("ytdlp", "downloads", req.sessionID, jobid, "%(title)s.%(ext)s"), "-U", url];    
+        const audioArgs = ["-f", "ba", "-o", path.join("ytdlp", "downloads", req.sessionID, jobid, "%(title)s.%(ext)s"), "-U", "--restrict-filenames", url];
+        const videoArgs = ["-f", "bv*+ba/b", "-o", path.join("ytdlp", "downloads", req.sessionID, jobid, "%(title)s.%(ext)s"), "-U", "--restrict-filenames", url];    
 
         switch (data.format) {
             case "mp3":
