@@ -9,7 +9,8 @@
     <!-- Libraries -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.5.1/cdn/themes/dark.css" />
     <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.5.1/cdn/shoelace-autoloader.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.5.1/cdn/shoelace.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
     <!-- Scripts & CSS -->
     <script src="index.js"></script>
@@ -34,10 +35,18 @@
                     <sl-option value="webm">WEBM (Video)</sl-option>
                 </sl-select>
                 <br />
-                <sl-button type="submit" variant="primary">Download</sl-button>
-            </form>
+                <div class="flex-row">
+                    <sl-button type="submit" variant="primary">Download</sl-button>
+                    <sl-spinner class="spinner hidden"></sl-spinner>
+                </div>
+            </form>  
         </div>
     </div>
+
+    <div class="toasts">
+
+    </div>
+
 </body>
 
 </html>

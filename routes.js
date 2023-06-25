@@ -1,12 +1,13 @@
 const fs = require("fs");
-const { exec, spawn } = require("child_process");
- 
+const { spawn } = require("child_process");
 const session = require('express-session');
-const shortid = require('shortid');
+const { nanoid, customAlphabet } = require('nanoid');
 const express = require("express");
 const bodyParser = require('body-parser');
 const JSZip = require('jszip');
 const path = require("path");
+const ffmpeg = require("fluent-ffmpeg");
+const setTimeoutAsync = require('timers/promises').setTimeout;
 
 const port = 3000;
 let execPath = "";
@@ -17,6 +18,7 @@ function getYTDLPLocation() {
 }
 
 function convertFiles(folder, format) {
+
     const filenameRegex = /\.(mp4|mp3|m4a|ogg|wav|webm|mkv)$/g;
     if (!fs.existsSync(path.join(__dirname, "ytdlp", "downloads", folder))) return false;
     const folderContents = fs.readdirSync(path.join(__dirname, "ytdlp", "downloads", folder));
@@ -35,23 +37,22 @@ function convertFiles(folder, format) {
     
     folderContents.forEach(file => {
         const filename = file.replace(filenameRegex, "");
-        const arguments = ["-i", path.join(__dirname, "ytdlp", "downloads", folder, file), path.join(__dirname, "ytdlp", "downloads", folder, filename + "." + format)];
-        
-        tasks.push(new Promise(function (resolve, reject) {
-            const ffmpegProcess = spawn("ffmpeg", arguments);
 
-            ffmpegProcess.on('stderr', (stderr) => { reject(stderr) });
-            ffmpegProcess.on('error', (error) => { reject(error) });
-            ffmpegProcess.on('close', (code) => {
-                if (code != 0) reject(code);
+        tasks.push(new Promise((resolve, reject) => {
+            ffmpeg(path.join(__dirname, "ytdlp", "downloads", folder, file))
+                .on('end', () => {
+                    fs.unlink(path.join(__dirname, "ytdlp", "downloads", folder, file), (err) => {
+                        if (err) reject("File deletion error: " + err);
+                    });
 
-                // takes a shit ton of time idk why
-                fs.unlink(path.join(__dirname, "ytdlp", "downloads", folder, file), (err) => {
-                    if (err) console.error("File deletion error: " + err);
-                });
+                    resolve();
+                })
 
-                resolve();
-            });
+                .on('error', (err) => {
+                    reject("FFMPEG error: " + err);
+                })
+
+                .save(path.join(__dirname, "ytdlp", "downloads", folder, filename + "." + format));
         }));
     });
 
@@ -69,10 +70,11 @@ module.exports.main = function main() {
     app.use(bodyParser.urlencoded({ extended: false }))
 
     const oneDay = 1000 * 60 * 60 * 24; // 24 hours
-    const downloadDeleteDelay = 1000 * 60 * 20; // 20 minutes
+    const downloadDeleteDelay = 1000 * 60 // 20 minutes
 
+    customAlphabet("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
     app.use(session({
-        secret: "cdKvpnrsjwDqGDdpgkYqISmLQFZJiddhanKBtPPJ",
+        secret: nanoid(25),
         saveUninitialized: true,
         cookie: { maxAge: oneDay },
         resave: false
@@ -82,15 +84,18 @@ module.exports.main = function main() {
 
     app.get('/', (req, res) => {
         res.sendFile('index.html');
-    })
+    });
 
     app.get("/downloads/:userid/:jobid", async (req, res) => {
-        if (!fs.existsSync(path.join("ytdlp", "downloads", req.params.userid, req.params.jobid))) res.sendStatus(404);
+        if (!fs.existsSync(path.join("ytdlp", "downloads", req.params.userid, req.params.jobid))) { 
+            res.sendStatus(404);
+            return; 
+        }
 
         const URLpath = path.join("ytdlp", "downloads", req.params.userid, req.params.jobid);
         const folderContents = fs.readdirSync(URLpath);
         if(folderContents.length === 1) {
-
+            res.setHeader("Content-Disposition", `attachment; filename="${folderContents[0]}"`);
             res.sendFile(path.join(__dirname, URLpath, folderContents[0]));
         } else {
             let zip = new JSZip();
@@ -110,7 +115,7 @@ module.exports.main = function main() {
                 .then(function (content) {
                     res.type(content.type);
                     content.arrayBuffer().then((buf) => {
-                        res.setHeader("Content-Disposition", `attachment; filename="download.zip"`)
+                        res.setHeader("Content-Disposition", `attachment; filename="download.zip"`);
                         res.send(Buffer.from(buf));
                     });
                 });
@@ -123,9 +128,8 @@ module.exports.main = function main() {
         const data = req.body;
         let arguments = [];
         let url = data.url;
-        const jobid = shortid.generate();
+        const jobid = nanoid(9);
         const ytdlpExec = getYTDLPLocation();
-
 
         const audioArgs = ["-f", "ba", "-o", path.join("ytdlp", "downloads", req.sessionID, jobid, "%(title)s.%(ext)s"), "-U", url];
         const videoArgs = ["-f", "bv*+ba/b", "-o", path.join("ytdlp", "downloads", req.sessionID, jobid, "%(title)s.%(ext)s"), "-U", url];    
@@ -158,13 +162,10 @@ module.exports.main = function main() {
         }
 
         const ytdlpProcess = spawn(ytdlpExec, arguments);
-
         let err = false;
 
-        ytdlpProcess.stderr.on("data", data => { res.send(`YT-DLP stderr: ${data}`); err = true});
-
-        ytdlpProcess.on('error', (error) => { res.send(`YT-DLP Error: ${error.message}`); err = true });
-
+        ytdlpProcess.stderr.on("data", data => { if(!err) { res.send(`YT-DLP stderr: ${data}`); err = true }});
+        ytdlpProcess.on('error', (error) => { if(!err) { res.send(`YT-DLP Error: ${error.message}`); err = true }});
         ytdlpProcess.on('close', (code) => {
             if(code != 0) {
                 if(!err) res.send("YT-DLP exited with code " + code);
@@ -173,17 +174,15 @@ module.exports.main = function main() {
 
             convertFiles(path.join(req.sessionID, jobid), data.format)
                 .then(() => {
-                    res.send(req.baseUrl + "/downloads/" + req.sessionID + "/" + jobid);
+                    res.send("/downloads/" + req.sessionID + "/" + jobid);
                 })
                 .catch((err) => {
                     res.send("Handled error: " + err);
                 });
         });
-
-        // todo: delete downloads after 20 mins :)
-    })
+    });
 
     app.listen(port, () => {
         console.log(`YT-DLP website listening on port ${port}`);
-    })
+    });
 }

@@ -16,7 +16,9 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "fast-folder-size": "^2.1.0",
+    "fluent-ffmpeg": "^2.1.2",
     "jszip": "^3.10.1",
+    "nanoid": "^3.3.6",
     "node-downloader-helper": "^2.1.7",
     "shortid": "^2.2.16"
   }
