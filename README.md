@@ -25,8 +25,6 @@ You can also configure some stuff about the website in ``./config.json``.
 
 # Known issues
 
-If you are running this project on linux, you might have some issues like these:
-
  - Error accessing pyinstaller from executable
 
 Fix: Download yt-dlp from their official repository from the releases tab
@@ -34,3 +32,7 @@ Fix: Download yt-dlp from their official repository from the releases tab
  - EACCESS error with yt-dlp
 
 Fix: Manually run ``chmod +x`` on the executable.
+
+ - FFMPEG killed with error SIGKILL
+
+Fix: There is no general fix here. FFMPEG ran out of ram and it got killed.
