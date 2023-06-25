@@ -4,7 +4,7 @@ A simple video downloader website which uses [YT-DLP](https://github.com/yt-dlp/
 
 You can use a live demo at [yt-dlp-website.xfi.repl.co](https://yt-dlp-website.xfi.repl.co/)!
 
-# Running
+# Setup
 
 To run the website, clone this repository:
 ```
@@ -20,6 +20,8 @@ There are two ways to run the website, one for development and one for productio
 npm run start # production
 npm run dev # development (nodemon)
 ```
+
+You can also configure some stuff about the website in ``./config.json``.
 
 # Known issues
 
