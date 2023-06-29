@@ -36,3 +36,6 @@ Fix: Manually run ``chmod +x`` on the executable.
  - FFMPEG killed with error SIGKILL
 
 Fix: There is no general fix here. FFMPEG ran out of ram and it got killed.
+
+ - Nodemon doesnt exist
+Fix: run ``npm i -g nodemon``
